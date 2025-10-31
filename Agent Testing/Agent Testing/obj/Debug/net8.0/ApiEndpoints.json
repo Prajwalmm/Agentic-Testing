@@ -1,0 +1,22 @@
+[
+  {
+    "ContainingType": "Agent_Testing.Controllers.PersonController",
+    "Method": "GetAllPersons",
+    "RelativePath": "api/Person",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Agent_Testing.Controllers.PersonController",
+    "Method": "TestConnection",
+    "RelativePath": "api/Person/test-connection",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]
