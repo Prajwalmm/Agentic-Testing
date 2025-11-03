@@ -6,6 +6,7 @@
         public int Age { get; set; }
         public DateOnly DateOfBirth { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
+        public int Id { get; set; }
 
     }
 }
