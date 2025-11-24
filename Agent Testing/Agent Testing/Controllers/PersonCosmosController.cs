@@ -15,10 +15,8 @@ namespace Agent_Testing.Controllers
         {
             _personCosmosService = personCosmosService;
         }
-        
+
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<Person>>> GetAllPersons()
         {
             try
@@ -33,19 +31,17 @@ namespace Agent_Testing.Controllers
             }
         }
 
-   
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Person>> GetProductById(int id)
+
+        [HttpGet("{PhNo}")]
+        public async Task<ActionResult<Person>> GetPersonbyPhoneNumber(string PhNo)
         {
             try
             {
-                var person = await _personCosmosService.GetPersonByIdAsync(id);
+                var person = await _personCosmosService.GetPersonByPhNoAsync(PhNo);
 
                 if (person == null)
                 {
-                    return NotFound(new { message = $"person with id '{id}' not found" });
+                    return NotFound(new { message = $"person with PhoneNumber '{PhNo}' not found" });
                 }
 
                 return Ok(person);
@@ -58,8 +54,6 @@ namespace Agent_Testing.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Person>> CreateProduct([FromBody] Person person)
         {
             try
@@ -71,34 +65,26 @@ namespace Agent_Testing.Controllers
 
                 var createdProduct = await _personCosmosService.CreatePersonAsync(person);
 
-                return CreatedAtAction(
-                    nameof(GetProductById),
-                    new { id = createdProduct.Id },
-                    createdProduct);
+                return Ok(createdProduct);
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
-            }            
+            }
         }
 
-      
-        [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Person>> UpdatePersonDetails(int id, [FromBody] Person person)
+
+        [HttpPut("{PhoneNumber}")]
+        public async Task<ActionResult<Person>> UpdatePersonDetails(string PhoneNumber, [FromBody] Person person)
         {
             try
-            {                
-                var updatedProduct = await _personCosmosService.UpdatePersonAsync(id, person);
-
-                if (updatedProduct == null)
-                {
-                    return NotFound(new { message = $"Product with id '{id}' not found" });
-                }
-                return Ok(updatedProduct);
+            {
+                var updatedProduct = await _personCosmosService.UpdatePersonAsync(PhoneNumber, person);
+                if (updatedProduct != null)
+                    return Ok(updatedProduct);
+                else return BadRequest($"Person with Phonenumber {PhoneNumber} was not found ");
             }
-           
+
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
@@ -106,9 +92,7 @@ namespace Agent_Testing.Controllers
         }
 
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> DeletePerson(int id)
+        public async Task<ActionResult> DeletePerson(string id)
         {
             try
             {

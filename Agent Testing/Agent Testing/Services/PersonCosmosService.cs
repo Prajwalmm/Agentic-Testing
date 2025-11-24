@@ -26,11 +26,11 @@ namespace Agent_Testing.Services
             }
         }
 
-        public async Task<Person?> GetPersonByIdAsync(int id)
+        public async Task<Person?> GetPersonByPhNoAsync(string PhNo)
         {
             try
-            {               
-                var person = await _personCosmosRepo.GetByIdAsync(id);               
+            {
+                var person = await _personCosmosRepo.GetByPhNoAsync(PhNo);
                 return person;
             }
             catch (Exception ex)
@@ -45,8 +45,8 @@ namespace Agent_Testing.Services
             {
                 if (person == null)
                 {
-                    throw new ArgumentNullException(nameof(person), "Product cannot be null");
-                }                       
+                    throw new ArgumentNullException(nameof(person), "Person Details cannot be empty or null");
+                }
 
                 var createdProduct = await _personCosmosRepo.AddAsync(person);
 
@@ -58,17 +58,24 @@ namespace Agent_Testing.Services
             }
         }
 
-        public async Task<Person?> UpdatePersonAsync(int id, Person person)
+        public async Task<Person?> UpdatePersonAsync(string phNo, Person updatedData)
         {
             try
             {
-                if (person == null)
+                if (updatedData == null)
                 {
-                    throw new ArgumentNullException(nameof(Person), "Product cannot be null");
+                    throw new ArgumentNullException(nameof(Person), "Person Details cannot be empty or null");
                 }
+                var person = await _personCosmosRepo.GetByPhNoAsync(phNo);
+                if (person == null)
+                    throw new Exception("Person not found");
 
-                var updatedPerson = await _personCosmosRepo.UpdateAsync(id, person);               
-
+                person.DateOfBirth = updatedData.DateOfBirth;
+                person.PhoneNumber = updatedData.PhoneNumber;
+                person.Occupation = updatedData.Occupation;
+                person.Name = updatedData.Name;
+                person.Age = updatedData.Age;
+                var updatedPerson = await _personCosmosRepo.UpdateAsync(person.Occupation, person);
                 return updatedPerson;
             }
             catch (Exception ex)
@@ -77,10 +84,10 @@ namespace Agent_Testing.Services
             }
         }
 
-        public async Task<bool> DeletePersonAsync(int id)
+        public async Task<bool> DeletePersonAsync(string id)
         {
             try
-            {         
+            {
                 var result = await _personCosmosRepo.DeleteAsync(id);
                 return result;
             }
@@ -88,7 +95,7 @@ namespace Agent_Testing.Services
             {
                 throw;
             }
-        }         
+        }
 
     }
 }

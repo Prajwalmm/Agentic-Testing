@@ -35,9 +35,9 @@ namespace Agent_Testing.Repository
                                 {
                                     Name = reader["NAME"].ToString() ?? "",
                                     Age = Convert.ToInt32(reader["AGE"]),
-                                    DateOfBirth = DateOnly.TryParse(reader["DATEOFBIRTH"]?.ToString(), out var dob)
+                                    DateOfBirth = DateTime.TryParse(reader["DATEOFBIRTH"]?.ToString(), out var dob)
                                         ? dob
-                                        : new DateOnly(1900, 1, 1),
+                                        : new DateTime(1900, 1, 1),
                                     PhoneNumber = reader["PHONENUMBER"].ToString() ?? ""
                                 });
                             }
