@@ -3,6 +3,9 @@ using Agent_Testing.Repository.Interface;
 using Agent_Testing.Repository;
 using Agent_Testing.Services.Interface;
 using Agent_Testing.Services;
+using Microsoft.Azure.Cosmos.Fluent;
+using Microsoft.Azure.Cosmos;
+using Agent_Testing.DBcontext;
 
 namespace Agent_Testing
 {
@@ -15,8 +18,12 @@ namespace Agent_Testing
             // Add services to the container.
             builder.Services.AddTransient<IPersonDetails, PersonDetails>();
             builder.Services.AddTransient<IPersonDataRepo, PersonDataRepo>();
+            builder.Services.AddTransient<IPersonCosmosService, PersonCosmosService>();
+            builder.Services.AddTransient<IPersonCosmosRepo, PersonCosmosRepo>();
 
             builder.Services.AddControllers();
+            //Cosmos DB setup
+            ConfigureCosmosDb(builder.Services, builder.Configuration);
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -38,6 +45,24 @@ namespace Agent_Testing
             app.MapControllers();
 
             app.Run();
+
+        }
+        static void ConfigureCosmosDb(IServiceCollection services, IConfiguration config)
+        {
+            string connectionString = config.GetConnectionString("CosmosDb");
+            string databaseName = "iseries-to-cosmos";
+            var cosmosClient = new CosmosClientBuilder(connectionString)
+                    .WithConnectionModeGateway()
+                    .WithSerializerOptions(new CosmosSerializationOptions()
+                    {
+                        IgnoreNullValues = true,
+                        PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
+                    })
+                    .Build();
+
+            services.AddSingleton(cosmosClient);
+            var dbContext = new CosmosDbContext(databaseName, cosmosClient);
+            services.AddSingleton(dbContext);
         }
     }
 }
